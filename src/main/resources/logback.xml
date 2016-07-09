@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- slf4j日志配置文件 -->
+<configuration debug="true" scan="true" scanPeriod="30 seconds">
+	<!-- 设置日志输出根目录 -->
+	<property name="log.dir" value="${catalina.base}/logs/project-template" />
+	<property name="encoding" value="UTF-8" />
+	<property name="normal-pattern" value="%d{yyyy-MM-dd.HH:mm:ss} %-5level [%thread] %logger{10}  %msg%n" />
+	<property name="console-pattern" value="%d{yyyy-MM-dd HH:mm:ss}|%.-5level|%-40.40logger{0}|%msg%n" />
+	<property name="plain-pattern" value="%d{yyyy-MM-dd.HH:mm:ss} %msg%n" />
+
+	<!-- log file default -->
+	<appender name="fileDefault"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<prudent>false</prudent>
+		<Append>true</Append>
+		<encoder>
+			<pattern>${normal-pattern}</pattern>
+			<charset>${encoding}</charset>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${log.dir}/project-template.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+		</rollingPolicy>
+		<maxHistory>7</maxHistory>
+	</appender>
+
+	<appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>${console-pattern}</pattern>
+			<charset>${encoding}</charset>
+		</encoder>
+	</appender>
+
+	<root level="INFO">
+		<appender-ref ref="stdout" />
+	</root>
+
+</configuration>
