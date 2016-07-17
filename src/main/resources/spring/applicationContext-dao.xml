@@ -7,7 +7,7 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd http://www.springframework.org/schema/tx     
           http://www.springframework.org/schema/tx/spring-tx-4.0.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd"
-    default-autowire="byName" default-lazy-init="false">
+   	default-lazy-init="false">
     
     <!-- 开启自动切面代理 -->
 	<aop:aspectj-autoproxy />
@@ -65,10 +65,9 @@
 		<property name="mapperLocations" value="classpath*:sqlmap/*.xml" />
 	</bean>
 	
-	<!-- DAO Beans -->
-	<bean id="poJoMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
-		<property name="mapperInterface" value="com.cloudyoung.dao.PoJoMapper" />
-		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+	  <property name="basePackage" value="com.cloudyoung.dao" />
+	  <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
 	</bean>
 	
 </beans>
