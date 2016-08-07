@@ -1,11 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>project-template</groupId>
-	<artifactId>project-template</artifactId>
+	<groupId>jee-template</groupId>
+	<artifactId>jee-template</artifactId>
 	<version>1.0.0</version>
 	<packaging>war</packaging>
 
-	<name>project-template</name>
+	<name>jee-template</name>
 	<url>http://maven.apache.org</url>
 
 	<repositories>
@@ -488,8 +488,8 @@
 										<echo>Welcome to use Local!</echo>
 										<echo>${project.build.outputDirectory}!</echo>
 										<echo>================================</echo>
-										<delete file="target/project-template/WEB-INF/classes/META-INF/spring/consumerContext.xml" />
-										<delete file="target/project-template/WEB-INF/classes/META-INF/spring/providerContext.xml" />
+										<delete file="target/jee-template/WEB-INF/classes/META-INF/spring/consumerContext.xml" />
+										<delete file="target/jee-template/WEB-INF/classes/META-INF/spring/providerContext.xml" />
 									</target>
 								</configuration>
 								<goals>
@@ -506,7 +506,7 @@
 	</profiles>
 	
 	<build>
-		<finalName>project-template</finalName>
+		<finalName>jee-template</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -523,7 +523,7 @@
 				<version>8.1.8.v20121106</version>
 				<configuration>
 					<scanIntervalSeconds>10</scanIntervalSeconds>
-					<webAppSourceDirectory>target/project-template/</webAppSourceDirectory>
+					<webAppSourceDirectory>target/jee-template/</webAppSourceDirectory>
 					<webApp>
 						<contextPath>/</contextPath>
 					</webApp>
