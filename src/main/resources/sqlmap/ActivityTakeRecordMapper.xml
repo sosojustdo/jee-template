@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cloudyoung.dao.ActivityTakeRecordMapper">
+  <resultMap id="BaseResultMap" type="com.cloudyoung.xxx.model.ActivityTakeRecord">
+    <id column="activity_take_record_id" jdbcType="BIGINT" property="activityTakeRecordId" />
+    <result column="activity_id" jdbcType="BIGINT" property="activityId" />
+    <result column="activity_code" jdbcType="VARCHAR" property="activityCode" />
+    <result column="activity_item_id" jdbcType="BIGINT" property="activityItemId" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+    <result column="obtain_unicode" jdbcType="VARCHAR" property="obtainUnicode" />
+    <result column="prize_flag" jdbcType="INTEGER" property="prizeFlag" />
+    <result column="platform" jdbcType="VARCHAR" property="platform" />
+    <result column="device_no" jdbcType="VARCHAR" property="deviceNo" />
+    <result column="obtain_date" jdbcType="TIMESTAMP" property="obtainDate" />
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+    activity_take_record_id, activity_id, activity_code, activity_item_id, user_id, mobile, 
+    obtain_unicode, prize_flag, platform, device_no, obtain_date
+  </sql>
+  
+    <sql id="Base_Where" >
+	   <if test="activityId != null" > and activity_id=#{activityId} </if>
+	   <if test="activityCode != null and activityCode != ''" > and activity_code=#{activityCode} </if>
+	   <if test="activityItemId != null" > and activity_item_id=#{activityItemId} </if>
+	   <if test="userId != null and userId != ''" > and user_id=#{userId} </if>
+	   <if test="mobile != null and mobile != ''" > and mobile=#{mobile} </if>
+	   <if test="deviceNo != null and deviceNo != ''" > and device_no=#{deviceNo} </if>
+	   <if test="prizeFlag != null" > and prize_flag=#{prizeFlag} </if>
+	   <if test="activityIds != null">
+	    	and activity_id in 
+	    	<foreach item="item" index="index" collection="activityIds" open="(" separator="," close=")">
+	  			#{item}  
+	  		</foreach>
+	   </if>
+	   <if test="activityItemIds != null">
+	    	and activity_item_id in 
+	    	<foreach item="item" index="index" collection="activityItemIds" open="(" separator="," close=")">
+	  			#{item}  
+	  		</foreach>
+	   </if>
+	</sql>
+  
+  <select id="findActivityTakeRecordByParams" parameterType="java.util.Map" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List" /> from activity_take_record where 1=1 <include refid="Base_Where" />
+  </select>
+  
+  <select id="findActivityTotalRecords" parameterType="java.util.Map" resultType="java.util.HashMap">
+  	select activity_id as activityId, count(1) as total from activity_take_record where 1=1 
+  	<if test="activityIds != null">
+    	and activity_id in 
+    	<foreach item="item" index="index" collection="activityIds" open="(" separator="," close=")">
+  			#{item}  
+  		</foreach>
+    </if>
+  	GROUP BY activity_id
+  </select>
+  
+  <select id="findActivityPrizeCode" parameterType="java.lang.Long" resultType="java.lang.String">
+  	select obtain_unicode from activity_take_record where prize_flag = 1 
+  	<if test="activityId != null" > and activity_id=#{activityId} </if>
+  </select>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from activity_take_record
+    where activity_take_record_id = #{activityTakeRecordId,jdbcType=BIGINT}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from activity_take_record
+    where activity_take_record_id = #{activityTakeRecordId,jdbcType=BIGINT}
+  </delete>
+  
+  <insert id="insert" parameterType="com.cloudyoung.xxx.model.ActivityTakeRecord">
+    insert into activity_take_record (activity_take_record_id, activity_id, activity_code, 
+      activity_item_id, user_id, mobile, 
+      obtain_unicode, prize_flag, platform, 
+      device_no, obtain_date)
+    values (#{activityTakeRecordId,jdbcType=BIGINT}, #{activityId,jdbcType=BIGINT}, #{activityCode,jdbcType=VARCHAR}, 
+      #{activityItemId,jdbcType=BIGINT}, #{userId,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR}, 
+      #{obtainUnicode,jdbcType=VARCHAR}, #{prizeFlag,jdbcType=INTEGER}, #{platform,jdbcType=VARCHAR}, 
+      #{deviceNo,jdbcType=VARCHAR}, #{obtainDate,jdbcType=TIMESTAMP})
+  </insert>
+  
+  <insert id="insertSelective" parameterType="com.cloudyoung.xxx.model.ActivityTakeRecord">
+    insert into activity_take_record
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="activityTakeRecordId != null">
+        activity_take_record_id,
+      </if>
+      <if test="activityId != null">
+        activity_id,
+      </if>
+      <if test="activityCode != null">
+        activity_code,
+      </if>
+      <if test="activityItemId != null">
+        activity_item_id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="mobile != null">
+        mobile,
+      </if>
+      <if test="obtainUnicode != null">
+        obtain_unicode,
+      </if>
+      <if test="prizeFlag != null">
+        prize_flag,
+      </if>
+      <if test="platform != null">
+        platform,
+      </if>
+      <if test="deviceNo != null">
+        device_no,
+      </if>
+      <if test="obtainDate != null">
+        obtain_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="activityTakeRecordId != null">
+        #{activityTakeRecordId,jdbcType=BIGINT},
+      </if>
+      <if test="activityId != null">
+        #{activityId,jdbcType=BIGINT},
+      </if>
+      <if test="activityCode != null">
+        #{activityCode,jdbcType=VARCHAR},
+      </if>
+      <if test="activityItemId != null">
+        #{activityItemId,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null">
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="obtainUnicode != null">
+        #{obtainUnicode,jdbcType=VARCHAR},
+      </if>
+      <if test="prizeFlag != null">
+        #{prizeFlag,jdbcType=INTEGER},
+      </if>
+      <if test="platform != null">
+        #{platform,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceNo != null">
+        #{deviceNo,jdbcType=VARCHAR},
+      </if>
+      <if test="obtainDate != null">
+        #{obtainDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.cloudyoung.xxx.model.ActivityTakeRecord">
+    update activity_take_record
+    <set>
+      <if test="activityId != null">
+        activity_id = #{activityId,jdbcType=BIGINT},
+      </if>
+      <if test="activityCode != null">
+        activity_code = #{activityCode,jdbcType=VARCHAR},
+      </if>
+      <if test="activityItemId != null">
+        activity_item_id = #{activityItemId,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null">
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="obtainUnicode != null">
+        obtain_unicode = #{obtainUnicode,jdbcType=VARCHAR},
+      </if>
+      <if test="prizeFlag != null">
+        prize_flag = #{prizeFlag,jdbcType=INTEGER},
+      </if>
+      <if test="platform != null">
+        platform = #{platform,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceNo != null">
+        device_no = #{deviceNo,jdbcType=VARCHAR},
+      </if>
+      <if test="obtainDate != null">
+        obtain_date = #{obtainDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where activity_take_record_id = #{activityTakeRecordId,jdbcType=BIGINT}
+  </update>
+  
+  <update id="updateByPrimaryKey" parameterType="com.cloudyoung.xxx.model.ActivityTakeRecord">
+    update activity_take_record
+    set activity_id = #{activityId,jdbcType=BIGINT},
+      activity_code = #{activityCode,jdbcType=VARCHAR},
+      activity_item_id = #{activityItemId,jdbcType=BIGINT},
+      user_id = #{userId,jdbcType=VARCHAR},
+      mobile = #{mobile,jdbcType=VARCHAR},
+      obtain_unicode = #{obtainUnicode,jdbcType=VARCHAR},
+      prize_flag = #{prizeFlag,jdbcType=INTEGER},
+      platform = #{platform,jdbcType=VARCHAR},
+      device_no = #{deviceNo,jdbcType=VARCHAR},
+      obtain_date = #{obtainDate,jdbcType=TIMESTAMP}
+    where activity_take_record_id = #{activityTakeRecordId,jdbcType=BIGINT}
+  </update>
+  
+  <insert id="batchSave" parameterType="com.cloudyoung.xxx.model.ActivityTakeRecord" useGeneratedKeys="true" keyProperty="activityTakeRecordId">
+      insert into activity_take_record (activity_take_record_id, activity_id, activity_code, 
+      activity_item_id, user_id, mobile, 
+      obtain_unicode, prize_flag, platform, 
+      device_no, obtain_date) values 
+    <foreach collection="list" item="item" index="index" separator="," >  
+        (#{item.activityTakeRecordId},
+    	#{item.activityId},
+    	#{item.activityCode},
+    	#{item.activityItemId},
+    	#{item.userId},
+    	#{item.mobile},
+    	#{item.obtainUnicode},
+    	#{item.prizeFlag},
+    	#{item.platform},
+    	#{item.deviceNo},
+    	#{item.obtainDate}
+    	)
+    </foreach> 
+  </insert>
+  
+</mapper>

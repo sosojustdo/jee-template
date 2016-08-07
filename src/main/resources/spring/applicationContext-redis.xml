@@ -53,5 +53,20 @@
 	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">  
         <property name="connectionFactory" ref="connectionFactory" />  
     </bean>
+    
+    <bean id="redissonManager" class="com.llb.cloudyoung.framework.tools.redis.RedissonManager" init-method="init">
+		<property name="sentinelAddress">
+			<set>
+				<value>${redis.sentinel1}</value>
+				<value>${redis.sentinel2}</value>
+			</set>
+		</property>
+        <property name="masterName" value="${redis.sentine.masterName}"></property>
+        <property name="password" value="${redis.single.password}"></property>
+    </bean>
+	
+	<bean id="redissonDistributedLock" class="com.llb.cloudyoung.framework.tools.lock.RedissonDistributedLock">
+		<constructor-arg index="0" name="redissonManager" ref="redissonManager"/>
+	</bean>
 	
 </beans>

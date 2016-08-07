@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cloudyoung.dao.ActivityMapper">
+  <resultMap id="BaseResultMap" type="com.cloudyoung.xxx.model.Activity">
+    <id column="activity_id" jdbcType="BIGINT" property="activityId" />
+    <result column="activity_code" jdbcType="VARCHAR" property="activityCode" />
+    <result column="activity_name" jdbcType="VARCHAR" property="activityName" />
+    <result column="activity_desc" jdbcType="VARCHAR" property="activityDesc" />
+    <result column="activity_each_num" jdbcType="INTEGER" property="activityEachNum" />
+    <result column="activity_each_title" jdbcType="VARCHAR" property="activityEachTitle" />
+    <result column="activity_notice" jdbcType="VARCHAR" property="activityNotice" />
+    <result column="activity_notice_url" jdbcType="VARCHAR" property="activityNoticeUrl" />
+    <result column="activity_home_page_url" jdbcType="VARCHAR" property="activityHomePageUrl" />
+    <result column="activity_img_url" jdbcType="VARCHAR" property="activityImgUrl" />
+    <result column="activity_start_date" jdbcType="TIMESTAMP" property="activityStartDate" />
+    <result column="activity_end_date" jdbcType="TIMESTAMP" property="activityEndDate" />
+    <result column="activity_publish_start_date" jdbcType="TIMESTAMP" property="activityPublishStartDate" />
+    <result column="activity_publish_end_date" jdbcType="TIMESTAMP" property="activityPublishEndDate" />
+    <result column="activity_published" jdbcType="TINYINT" property="activityPublished" />
+    <result column="activity_play_status" jdbcType="TINYINT" property="activityPlayStatus" />
+    <result column="activity_status" jdbcType="TINYINT" property="activityStatus" />
+    <result column="create_user" jdbcType="BIGINT" property="createUser" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="last_update_date" jdbcType="TIMESTAMP" property="lastUpdateDate" />
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+    activity_id, activity_code, activity_name, activity_desc, activity_each_num, activity_each_title, 
+    activity_notice,activity_notice_url,activity_home_page_url, activity_img_url, activity_start_date, 
+    activity_end_date, activity_publish_start_date,activity_publish_end_date, activity_published, 
+    activity_play_status, activity_status, create_user, create_date, last_update_date
+  </sql>
+  
+  <sql id="Base_Where" >
+	   <if test="activityId != null" > and activity_id=#{activityId} </if>
+	   <if test="activityName != null and activityName != ''" > and activity_name=#{activityName} </if>
+	   <if test="activityCode != null and activityCode != ''" > and activity_code=#{activityCode} </if>
+	   <if test="activityStatus != null" > and activity_status=#{activityStatus} </if>
+	   <if test="activityPlayStatus != null" > and activity_play_status=#{activityPlayStatus} </if>
+	   <if test="activityPublished != null" > and activity_published=#{activityPublished} </if>
+	   <if test="now != null" >
+		<![CDATA[
+			and activity_start_date < #{now}
+		]]>
+		<![CDATA[
+			and activity_end_date > #{now}
+		]]>
+	   </if>
+	   <if test="activityIds != null">
+	    	and activity_id in 
+	    	<foreach item="item" index="index" collection="activityIds" open="(" separator="," close=")">
+	  			#{item}  
+	  		</foreach>
+	   </if>
+	   <if test="orderBy != null and orderBy !=''">order by #{orderBy}</if>
+	   <if test="limit != null and limit !=''">limit #{limit}</if>
+	</sql>
+  
+  <select id="findActivityByParams" parameterType="java.util.Map" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List" /> from activity where 1=1 <include refid="Base_Where" />
+  </select>
+  
+  <select id="getNeedNoticeActivityInfo" parameterType="java.util.Map" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List" /> 
+  	from activity 
+  	where 1=1
+  	<include refid="Base_Where" />
+  	order by activity_start_date DESC limit 1
+  </select>
+  
+  <select id="getActivityEachRecords" parameterType="java.util.Map" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List" /> from activity where activity_play_status = 2 
+  	<if test="activityCode != null and activityCode != ''">
+  		and activity_code=#{activityCode} 
+  	</if>
+  	<if test="activityStartDate != null">
+  		<![CDATA[
+			and activity_start_date < #{activityStartDate} 
+		]]>
+  	</if>
+  	ORDER BY activity_start_date desc limit #{pageSize} 
+  </select>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from activity
+    where activity_id = #{activityId,jdbcType=BIGINT}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from activity
+    where activity_id = #{activityId,jdbcType=BIGINT}
+  </delete>
+  
+  <insert id="insert" parameterType="com.cloudyoung.xxx.model.Activity">
+    insert into activity (activity_id, activity_code, activity_name, 
+      activity_desc, activity_each_num, activity_each_title, 
+      activity_notice,activity_notice_url,activity_home_page_url, activity_img_url, activity_start_date, 
+      activity_end_date, activity_publish_start_date, 
+      activity_publish_end_date, activity_published, 
+      activity_play_status, activity_status, create_user, 
+      create_date, last_update_date)
+    values (#{activityId,jdbcType=BIGINT}, #{activityCode,jdbcType=VARCHAR}, #{activityName,jdbcType=VARCHAR}, 
+      #{activityDesc,jdbcType=VARCHAR}, #{activityEachNum,jdbcType=INTEGER}, #{activityEachTitle,jdbcType=VARCHAR}, 
+      #{activityNotice,jdbcType=VARCHAR}, #{activityNoticeUrl,jdbcType=VARCHAR}, #{activityHomePageUrl,jdbcType=VARCHAR},
+       #{activityImgUrl,jdbcType=VARCHAR}, #{activityStartDate,jdbcType=TIMESTAMP}, 
+      #{activityEndDate,jdbcType=TIMESTAMP}, #{activityPublishStartDate,jdbcType=TIMESTAMP}, 
+      #{activityPublishEndDate,jdbcType=TIMESTAMP}, #{activityPublished,jdbcType=TINYINT}, 
+      #{activityPlayStatus,jdbcType=TINYINT}, #{activityStatus,jdbcType=TINYINT}, #{createUser,jdbcType=BIGINT}, 
+      #{createDate,jdbcType=TIMESTAMP}, #{lastUpdateDate,jdbcType=TIMESTAMP})
+  </insert>
+  
+  <insert id="insertSelective" parameterType="com.cloudyoung.xxx.model.Activity">
+    insert into activity
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="activityId != null">
+        activity_id,
+      </if>
+      <if test="activityCode != null">
+        activity_code,
+      </if>
+      <if test="activityName != null">
+        activity_name,
+      </if>
+      <if test="activityDesc != null">
+        activity_desc,
+      </if>
+      <if test="activityEachNum != null">
+        activity_each_num,
+      </if>
+      <if test="activityEachTitle != null">
+        activity_each_title,
+      </if>
+      <if test="activityNotice != null">
+        activity_notice,
+      </if>
+      <if test="activityNotice != null">
+        activity_notice_url,
+      </if>
+      <if test="activityNotice != null">
+        activity_home_page_url,
+      </if>
+      <if test="activityImgUrl != null">
+        activity_img_url,
+      </if>
+      <if test="activityStartDate != null">
+        activity_start_date,
+      </if>
+      <if test="activityEndDate != null">
+        activity_end_date,
+      </if>
+      <if test="activityPublishStartDate != null">
+        activity_publish_start_date,
+      </if>
+      <if test="activityPublishEndDate != null">
+        activity_publish_end_date,
+      </if>
+      <if test="activityPublished != null">
+        activity_published,
+      </if>
+      <if test="activityPlayStatus != null">
+        activity_play_status,
+      </if>
+      <if test="activityStatus != null">
+        activity_status,
+      </if>
+      <if test="createUser != null">
+        create_user,
+      </if>
+      <if test="createDate != null">
+        create_date,
+      </if>
+      <if test="lastUpdateDate != null">
+        last_update_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="activityId != null">
+        #{activityId,jdbcType=BIGINT},
+      </if>
+      <if test="activityCode != null">
+        #{activityCode,jdbcType=VARCHAR},
+      </if>
+      <if test="activityName != null">
+        #{activityName,jdbcType=VARCHAR},
+      </if>
+      <if test="activityDesc != null">
+        #{activityDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="activityEachNum != null">
+        #{activityEachNum,jdbcType=INTEGER},
+      </if>
+      <if test="activityEachTitle != null">
+        #{activityEachTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="activityNotice != null">
+        #{activityNotice,jdbcType=VARCHAR},
+      </if>
+      <if test="activityNotice != null">
+        #{activityNoticeUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="activityNotice != null">
+        #{activityHomePageUrl,jdbcType=VARCHAR}, 
+      </if>
+      <if test="activityImgUrl != null">
+        #{activityImgUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="activityStartDate != null">
+        #{activityStartDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="activityEndDate != null">
+        #{activityEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="activityPublishStartDate != null">
+        #{activityPublishStartDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="activityPublishEndDate != null">
+        #{activityPublishEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="activityPublished != null">
+        #{activityPublished,jdbcType=TINYINT},
+      </if>
+      <if test="activityPlayStatus != null">
+        #{activityPlayStatus,jdbcType=TINYINT},
+      </if>
+      <if test="activityStatus != null">
+        #{activityStatus,jdbcType=TINYINT},
+      </if>
+      <if test="createUser != null">
+        #{createUser,jdbcType=BIGINT},
+      </if>
+      <if test="createDate != null">
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastUpdateDate != null">
+        #{lastUpdateDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.cloudyoung.xxx.model.Activity">
+    update activity
+    <set>
+      <if test="activityCode != null">
+        activity_code = #{activityCode,jdbcType=VARCHAR},
+      </if>
+      <if test="activityName != null">
+        activity_name = #{activityName,jdbcType=VARCHAR},
+      </if>
+      <if test="activityDesc != null">
+        activity_desc = #{activityDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="activityEachNum != null">
+        activity_each_num = #{activityEachNum,jdbcType=INTEGER},
+      </if>
+      <if test="activityEachTitle != null">
+        activity_each_title = #{activityEachTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="activityNotice != null">
+        activity_notice = #{activityNotice,jdbcType=VARCHAR},
+      </if>
+      <if test="activityNotice != null">
+        activity_notice_url = #{activityNoticeUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="activityNotice != null">
+        activity_home_page_url = #{activityHomePageUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="activityImgUrl != null">
+        activity_img_url = #{activityImgUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="activityStartDate != null">
+        activity_start_date = #{activityStartDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="activityEndDate != null">
+        activity_end_date = #{activityEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="activityPublishStartDate != null">
+        activity_publish_start_date = #{activityPublishStartDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="activityPublishEndDate != null">
+        activity_publish_end_date = #{activityPublishEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="activityPublished != null">
+        activity_published = #{activityPublished,jdbcType=TINYINT},
+      </if>
+      <if test="activityPlayStatus != null">
+        activity_play_status = #{activityPlayStatus,jdbcType=TINYINT},
+      </if>
+      <if test="activityStatus != null">
+        activity_status = #{activityStatus,jdbcType=TINYINT},
+      </if>
+      <if test="createUser != null">
+        create_user = #{createUser,jdbcType=BIGINT},
+      </if>
+      <if test="createDate != null">
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastUpdateDate != null">
+        last_update_date = #{lastUpdateDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where activity_id = #{activityId,jdbcType=BIGINT}
+  </update>
+  
+  <update id="updateByPrimaryKey" parameterType="com.cloudyoung.xxx.model.Activity">
+    update activity
+    set activity_code = #{activityCode,jdbcType=VARCHAR},
+      activity_name = #{activityName,jdbcType=VARCHAR},
+      activity_desc = #{activityDesc,jdbcType=VARCHAR},
+      activity_each_num = #{activityEachNum,jdbcType=INTEGER},
+      activity_each_title = #{activityEachTitle,jdbcType=VARCHAR},
+      activity_notice = #{activityNotice,jdbcType=VARCHAR},
+      activity_notice_url = #{activityNoticeUrl,jdbcType=VARCHAR},
+      activity_home_page_url = #{activityHomePageUrl,jdbcType=VARCHAR},
+      activity_img_url = #{activityImgUrl,jdbcType=VARCHAR},
+      activity_start_date = #{activityStartDate,jdbcType=TIMESTAMP},
+      activity_end_date = #{activityEndDate,jdbcType=TIMESTAMP},
+      activity_publish_start_date = #{activityPublishStartDate,jdbcType=TIMESTAMP},
+      activity_publish_end_date = #{activityPublishEndDate,jdbcType=TIMESTAMP},
+      activity_published = #{activityPublished,jdbcType=TINYINT},
+      activity_play_status = #{activityPlayStatus,jdbcType=TINYINT},
+      activity_status = #{activityStatus,jdbcType=TINYINT},
+      create_user = #{createUser,jdbcType=BIGINT},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      last_update_date = #{lastUpdateDate,jdbcType=TIMESTAMP}
+    where activity_id = #{activityId,jdbcType=BIGINT}
+  </update>
+  
+  <update id="batchUpdate" parameterType="list">
+      <foreach collection="activitys" item="item" index="index" open="" close="" separator=";">
+        update activity 
+        <set>
+	      <if test="item.activityCode != null and item.activityCode != ''" >
+	        activity_code = #{item.activityCode,jdbcType=VARCHAR}, 
+	      </if>
+	      <if test="item.activityName != null and item.activityName != ''" >
+	        activity_name = #{item.activityName,jdbcType=VARCHAR}, 
+	      </if>
+	      <if test="item.activityDesc != null and item.activityDesc != ''" >
+	        activity_desc = #{item.activityDesc,jdbcType=VARCHAR}, 
+	      </if>
+	      <if test="item.activityEachNum != null" >
+	        activity_each_num = #{item.activityEachNum,jdbcType=INTEGER}, 
+	      </if>
+	      <if test="item.activityEachTitle != null and item.activityEachTitle != ''" >
+	        activity_each_title = #{item.activityEachTitle,jdbcType=VARCHAR}, 
+	      </if>
+	      <if test="item.activityNotice != null and item.activityNotice != ''" >
+	        activity_notice = #{item.activityNotice,jdbcType=VARCHAR}, 
+	      </if>
+	      <if test="item.activityNoticeUrl != null and item.activityNoticeUrl !=''" >
+	        activity_img_url = #{item.activityImgUrl,jdbcType=VARCHAR}, 
+	      </if>
+	      <if test="item.activityHomePageUrl != null and item.activityHomePageUrl !=''" >
+	        activity_home_page_url = #{item.activityHomePageUrl,jdbcType=VARCHAR}, 
+	      </if>
+	      <if test="item.activityImgUrl != null and item.activityImgUrl !=''" >
+	        activity_img_url = #{item.activityImgUrl,jdbcType=VARCHAR}, 
+	      </if>
+	      <if test="item.activityStartDate != null" >
+	        activity_start_date = #{item.activityStartDate,jdbcType=TIMESTAMP}, 
+	      </if>
+	      <if test="item.activityEndDate != null" >
+	        activity_end_date = #{item.activityEndDate,jdbcType=TIMESTAMP}, 
+	      </if>
+	      <if test="item.activityPublishStartDate != null" >
+	        activity_publish_start_date = #{item.activityPublishStartDate,jdbcType=TIMESTAMP}, 
+	      </if>
+	      <if test="item.activityPublishEndDate != null" >
+	        activity_publish_end_date = #{item.activityPublishEndDate,jdbcType=TIMESTAMP}, 
+	      </if>
+	      <if test="item.activityPublished != null" >
+	        activity_published = #{item.activityPublished,jdbcType=TINYINT}, 
+	      </if>
+	      <if test="item.activityPlayStatus != null" >
+	        activity_play_status = #{item.activityPlayStatus,jdbcType=TINYINT}, 
+	      </if>
+	      <if test="item.activityStatus != null" >
+	        activity_status = #{item.activityStatus,jdbcType=TINYINT}, 
+	      </if>
+	      <if test="item.createUser != null" >
+	        create_user = #{item.createUser,jdbcType=BIGINT}, 
+	      </if>
+	      <if test="item.createDate != null" >
+	        create_date = #{item.createDate,jdbcType=TIMESTAMP}, 
+	      </if>
+	       <if test="item.lastUpdateDate != null" >
+ 			last_update_date = #{item.lastUpdateDate,jdbcType=TIMESTAMP}, 
+		   </if>  
+	    </set>
+	    where activity_id = #{item.activityId,jdbcType=BIGINT}
+       </foreach>
+  </update>
+  
+</mapper>

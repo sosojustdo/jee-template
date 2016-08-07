@@ -78,4 +78,11 @@
 	  <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
 	</bean>
 	
+	<bean id="sequenceGenerator" class="com.llb.cloudyoung.framework.tools.sequence.SequenceGenerator" scope="singleton">
+		<constructor-arg name="zkServerList" value="${zk.address.list}"></constructor-arg>
+		<constructor-arg name="zkBaseSleepTimeMs" value="${zk.base.sleep.time}"></constructor-arg>
+		<constructor-arg name="maxRetries" value="${zk.max.retries}"></constructor-arg>
+		<constructor-arg name="zkSerialIdPrefixPath" value="${zk.serialId.prefix.path}"></constructor-arg>
+	</bean>
+	
 </beans>

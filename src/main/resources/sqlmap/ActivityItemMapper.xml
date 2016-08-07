@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cloudyoung.dao.ActivityItemMapper">
+  <resultMap id="BaseResultMap" type="com.cloudyoung.xxx.model.ActivityItem">
+    <id column="activity_item_id" jdbcType="BIGINT" property="activityItemId" />
+    <result column="item_type" jdbcType="VARCHAR" property="itemType" />
+    <result column="item_way_type" jdbcType="VARCHAR" property="itemWayType" />
+    <result column="have_expire" jdbcType="TINYINT" property="haveExpire" />
+    <result column="expire_date" jdbcType="TIMESTAMP" property="expireDate" />
+    <result column="face_value_random" jdbcType="TINYINT" property="faceValueRandom" />
+    <result column="face_value" jdbcType="INTEGER" property="faceValue" />
+    <result column="have_upper_limit" jdbcType="TINYINT" property="haveUpperLimit" />
+    <result column="max_num" jdbcType="BIGINT" property="maxNum" />
+    <result column="remaind_num" jdbcType="BIGINT" property="remaindNum" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+    activity_item_id, item_type, item_way_type, have_expire, expire_date, face_value_random, 
+    face_value, have_upper_limit, max_num, remaind_num, create_date
+  </sql>
+  
+  	<sql id="Base_Where" >
+	   <if test="activityItemId != null" > and activity_item_id=#{activityItemId} </if>
+	   <if test="itemType != null and itemType != ''" > and item_type=#{itemType} </if>
+	   <if test="itemWayType != null and itemWayType != ''" > and item_way_type=#{itemWayType} </if>
+	   <if test="activityItemIds != null">
+	    	and activity_item_id in 
+	    	<foreach item="item" index="index" collection="activityItemIds" open="(" separator="," close=")">
+	  			#{item}  
+	  		</foreach>
+	   </if>
+	</sql>
+	
+  <select id="findActivityItemByParams" parameterType="java.util.Map" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List" /> from activity_item where 1=1 <include refid="Base_Where" />
+  </select>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from activity_item
+    where activity_item_id = #{activityItemId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from activity_item
+    where activity_item_id = #{activityItemId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cloudyoung.xxx.model.ActivityItem">
+    insert into activity_item (activity_item_id, item_type, item_way_type, 
+      have_expire, expire_date, face_value_random, 
+      face_value, have_upper_limit, max_num, 
+      remaind_num, create_date)
+    values (#{activityItemId,jdbcType=BIGINT}, #{itemType,jdbcType=VARCHAR}, #{itemWayType,jdbcType=VARCHAR}, 
+      #{haveExpire,jdbcType=TINYINT}, #{expireDate,jdbcType=TIMESTAMP}, #{faceValueRandom,jdbcType=TINYINT}, 
+      #{faceValue,jdbcType=INTEGER}, #{haveUpperLimit,jdbcType=TINYINT}, #{maxNum,jdbcType=BIGINT}, 
+      #{remaindNum,jdbcType=BIGINT}, #{createDate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cloudyoung.xxx.model.ActivityItem">
+    insert into activity_item
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="activityItemId != null">
+        activity_item_id,
+      </if>
+      <if test="itemType != null">
+        item_type,
+      </if>
+      <if test="itemWayType != null">
+        item_way_type,
+      </if>
+      <if test="haveExpire != null">
+        have_expire,
+      </if>
+      <if test="expireDate != null">
+        expire_date,
+      </if>
+      <if test="faceValueRandom != null">
+        face_value_random,
+      </if>
+      <if test="faceValue != null">
+        face_value,
+      </if>
+      <if test="haveUpperLimit != null">
+        have_upper_limit,
+      </if>
+      <if test="maxNum != null">
+        max_num,
+      </if>
+      <if test="remaindNum != null">
+        remaind_num,
+      </if>
+      <if test="createDate != null">
+        create_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="activityItemId != null">
+        #{activityItemId,jdbcType=BIGINT},
+      </if>
+      <if test="itemType != null">
+        #{itemType,jdbcType=VARCHAR},
+      </if>
+      <if test="itemWayType != null">
+        #{itemWayType,jdbcType=VARCHAR},
+      </if>
+      <if test="haveExpire != null">
+        #{haveExpire,jdbcType=TINYINT},
+      </if>
+      <if test="expireDate != null">
+        #{expireDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="faceValueRandom != null">
+        #{faceValueRandom,jdbcType=TINYINT},
+      </if>
+      <if test="faceValue != null">
+        #{faceValue,jdbcType=INTEGER},
+      </if>
+      <if test="haveUpperLimit != null">
+        #{haveUpperLimit,jdbcType=TINYINT},
+      </if>
+      <if test="maxNum != null">
+        #{maxNum,jdbcType=BIGINT},
+      </if>
+      <if test="remaindNum != null">
+        #{remaindNum,jdbcType=BIGINT},
+      </if>
+      <if test="createDate != null">
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cloudyoung.xxx.model.ActivityItem">
+    update activity_item
+    <set>
+      <if test="itemType != null">
+        item_type = #{itemType,jdbcType=VARCHAR},
+      </if>
+      <if test="itemWayType != null">
+        item_way_type = #{itemWayType,jdbcType=VARCHAR},
+      </if>
+      <if test="haveExpire != null">
+        have_expire = #{haveExpire,jdbcType=TINYINT},
+      </if>
+      <if test="expireDate != null">
+        expire_date = #{expireDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="faceValueRandom != null">
+        face_value_random = #{faceValueRandom,jdbcType=TINYINT},
+      </if>
+      <if test="faceValue != null">
+        face_value = #{faceValue,jdbcType=INTEGER},
+      </if>
+      <if test="haveUpperLimit != null">
+        have_upper_limit = #{haveUpperLimit,jdbcType=TINYINT},
+      </if>
+      <if test="maxNum != null">
+        max_num = #{maxNum,jdbcType=BIGINT},
+      </if>
+      <if test="remaindNum != null">
+        remaind_num = #{remaindNum,jdbcType=BIGINT},
+      </if>
+      <if test="createDate != null">
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where activity_item_id = #{activityItemId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cloudyoung.xxx.model.ActivityItem">
+    update activity_item
+    set item_type = #{itemType,jdbcType=VARCHAR},
+      item_way_type = #{itemWayType,jdbcType=VARCHAR},
+      have_expire = #{haveExpire,jdbcType=TINYINT},
+      expire_date = #{expireDate,jdbcType=TIMESTAMP},
+      face_value_random = #{faceValueRandom,jdbcType=TINYINT},
+      face_value = #{faceValue,jdbcType=INTEGER},
+      have_upper_limit = #{haveUpperLimit,jdbcType=TINYINT},
+      max_num = #{maxNum,jdbcType=BIGINT},
+      remaind_num = #{remaindNum,jdbcType=BIGINT},
+      create_date = #{createDate,jdbcType=TIMESTAMP}
+    where activity_item_id = #{activityItemId,jdbcType=BIGINT}
+  </update>
+</mapper>
