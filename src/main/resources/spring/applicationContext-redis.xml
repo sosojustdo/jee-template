@@ -14,59 +14,15 @@
 			http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd"
 	default-lazy-init="false">
 	
-	<bean id="poolConfig" class="redis.clients.jedis.JedisPoolConfig">  
-        <property name="maxTotal" value="${redis.maxTotal}" />  
-        <property name="minIdle" value="${redis.minIdle}" />  
-        <property name="maxWaitMillis" value="${redis.maxWaitTime}" />  
-        <property name="maxIdle" value="${redis.maxIdle}" />  
-        <property name="testOnBorrow" value="${redis.testOnBorrow}" />  
-        <property name="testOnReturn" value="true" />  
-        <property name="testWhileIdle" value="true" />  
-    </bean>
-    
-    <bean id="sentinelConfiguration" class="org.springframework.data.redis.connection.RedisSentinelConfiguration">  
-        <property name="master">  
-            <bean class="org.springframework.data.redis.connection.RedisNode">  
-                <property name="name" value="${redis.sentine.masterName}"></property>  
-            </bean>  
-        </property>  
-        <property name="sentinels">
-            <set>  
-                <bean class="org.springframework.data.redis.connection.RedisNode">  
-                    <constructor-arg name="host" value="${redis.sentinel1.host}"></constructor-arg>
-                    <constructor-arg name="port" value="${redis.sentinel1.port}"></constructor-arg>
-                </bean>
-                <bean class="org.springframework.data.redis.connection.RedisNode">
-                    <constructor-arg name="host" value="${redis.sentinel2.host}"></constructor-arg>
-                    <constructor-arg name="port" value="${redis.sentinel2.port}"></constructor-arg>
-                        
-                </bean>  
-            </set>  
-        </property>  
-    </bean>
-    
-    <bean id="connectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">  
-        <constructor-arg name="sentinelConfig" ref="sentinelConfiguration"></constructor-arg>  
-        <constructor-arg name="poolConfig" ref="poolConfig"></constructor-arg>  
-    </bean>
-	
-	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">  
-        <property name="connectionFactory" ref="connectionFactory" />  
-    </bean>
-    
-    <bean id="redissonManager" class="com.llb.cloudyoung.framework.tools.redis.RedissonManager" init-method="init">
-		<property name="sentinelAddress">
+	<bean id="redissonDistributedLock" class="com.llb.cloudyoung.framework.tools.lock.RedissonDistributedLock" init-method="init">
+        <constructor-arg index="0" name="sentinelAddress" type="java.util.Set">
 			<set>
 				<value>${redis.sentinel1}</value>
 				<value>${redis.sentinel2}</value>
 			</set>
-		</property>
-        <property name="masterName" value="${redis.sentine.masterName}"></property>
-        <property name="password" value="${redis.single.password}"></property>
-    </bean>
-	
-	<bean id="redissonDistributedLock" class="com.llb.cloudyoung.framework.tools.lock.RedissonDistributedLock">
-		<constructor-arg index="0" name="redissonManager" ref="redissonManager"/>
+		</constructor-arg>
+		<constructor-arg index="1" name="masterName" value="${redis.sentine.masterName}" type="java.lang.String"/>
+		<constructor-arg index="2" name="password" value="${redis.single.password}" type="java.lang.String"/>
 	</bean>
 	
 </beans>

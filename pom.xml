@@ -400,9 +400,9 @@
 		</dependency>
 		
 		<dependency>
-			<groupId>com.llb.cloudyoung.framework</groupId>
-			<artifactId>llb-framework</artifactId>
-			<version>1.0.0</version>
+		  <groupId>com.llb.cloudyoung.framework</groupId>
+		  <artifactId>llb-framework</artifactId>
+		  <version>1.0.1-SNAPSHOT</version>
 		</dependency>
 		
 	</dependencies>

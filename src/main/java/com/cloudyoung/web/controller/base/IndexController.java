@@ -2,10 +2,13 @@ package com.cloudyoung.web.controller.base;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.redisson.RedissonClient;
+import org.redisson.core.RLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,11 +53,13 @@ public class IndexController {
 	@RequestMapping(value="/sum")
 	public ModelAndView sum(HttpServletRequest request, HttpServletResponse response){
 		System.out.println(Thread.currentThread().getName());
-		redissonDistributedLock.lock(test_lock);
+		RedissonClient redisson = redissonDistributedLock.getRedisson();
+		RLock lock = redisson.getLock(test_lock);
+		lock.lock();
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("sum", count++);
 		//logger.info("sum value is:" + count);
-		redissonDistributedLock.unlock(test_lock);
+		lock.unlock();
 		return new ModelAndView(new JaxbJsonView(map));
 	}
 	
@@ -72,9 +77,26 @@ public class IndexController {
 		paramsMap.put("lotteryGiveType", lotteryGiveType);
 		paramsMap.put("mobile", mobile);
 		StringBuffer sb = new StringBuffer(test_lock).append(":").append(activityId).append(":").append(mobile);
-		redissonDistributedLock.lock(sb.toString());
-		ActivityResultVo resultVo = activityTakeRecordService.recevieActivityLottery(paramsMap);
-		redissonDistributedLock.unlock(sb.toString());
+		RedissonClient redisson = redissonDistributedLock.getRedisson();
+		RLock lock = redisson.getLock(sb.toString());
+		ActivityResultVo resultVo = null;
+		try {
+			lock.tryLock(6L, 5L, TimeUnit.SECONDS);
+			lock.lock();
+			resultVo = activityTakeRecordService.recevieActivityLottery(paramsMap);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}finally{
+			lock.unlock();
+		}
+//		try {
+//			lock.lock(5L, TimeUnit.SECONDS);
+//		    resultVo = activityTakeRecordService.recevieActivityLottery(paramsMap);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}finally{
+//			lock.unlock();
+//		}
 		return new ModelAndView(new JaxbJsonView(resultVo));
 	}
 	
