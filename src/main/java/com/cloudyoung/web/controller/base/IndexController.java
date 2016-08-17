@@ -22,6 +22,8 @@ import com.cloudyoung.service.ActivityTakeRecordService;
 import com.cloudyoung.web.view.JaxbJsonView;
 import com.cloudyoung.xxx.vo.ActivityResultVo;
 import com.llb.cloudyoung.framework.tools.lock.RedissonDistributedLock;
+import com.llb.cloudyoung.framework.tools.lock.ZkDistributedLock;
+import com.llb.cloudyoung.framework.tools.zk.ZkRetrantLock;
 
 @Controller
 public class IndexController {
@@ -33,6 +35,9 @@ public class IndexController {
 	
 	@Autowired
 	private RedissonDistributedLock redissonDistributedLock;
+	
+	@Autowired
+	private ZkDistributedLock zkDistributedLock;
 	
 	@Autowired
 	private ActivityTakeRecordService activityTakeRecordService;
@@ -76,19 +81,21 @@ public class IndexController {
 		paramsMap.put("activityId", activityId);
 		paramsMap.put("lotteryGiveType", lotteryGiveType);
 		paramsMap.put("mobile", mobile);
+		
+		ActivityResultVo resultVo = null;
 		StringBuffer sb = new StringBuffer(test_lock).append(":").append(activityId).append(":").append(mobile);
+		
 		RedissonClient redisson = redissonDistributedLock.getRedisson();
 		RLock lock = redisson.getLock(sb.toString());
-		ActivityResultVo resultVo = null;
 		try {
-			lock.tryLock(6L, 5L, TimeUnit.SECONDS);
-			lock.lock();
+			lock.tryLock(10L, 5L, TimeUnit.SECONDS);
 			resultVo = activityTakeRecordService.recevieActivityLottery(paramsMap);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}finally{
 			lock.unlock();
 		}
+		
 //		try {
 //			lock.lock(5L, TimeUnit.SECONDS);
 //		    resultVo = activityTakeRecordService.recevieActivityLottery(paramsMap);
@@ -97,6 +104,43 @@ public class IndexController {
 //		}finally{
 //			lock.unlock();
 //		}
+		
+//		ZkRetrantLock retrantLock = zkDistributedLock.getRetrantLock();
+//		try {
+//			while(true){
+//				if(retrantLock.acquire(6L, 5L, TimeUnit.SECONDS)){
+//					resultVo = activityTakeRecordService.recevieActivityLottery(paramsMap);
+//					break;
+//				}
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}finally{
+//			try {
+//				retrantLock.release();
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//		}
+		
+//		ZkNoRetrantLock noRetrantLock = zkDistributedLock.getNoRetrantLock();
+//		try {
+//			while(true){
+//				if(noRetrantLock.acquire(6L, 5L, TimeUnit.SECONDS)){
+//					resultVo = activityTakeRecordService.recevieActivityLottery(paramsMap);
+//					break;
+//				}
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}finally{
+//			try {
+//				noRetrantLock.release();
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//		}
+		
 		return new ModelAndView(new JaxbJsonView(resultVo));
 	}
 	

@@ -25,4 +25,9 @@
 		<constructor-arg index="2" name="password" value="${redis.single.password}" type="java.lang.String"/>
 	</bean>
 	
+	<bean id="zkDistributedLock" class="com.llb.cloudyoung.framework.tools.lock.ZkDistributedLock">
+		<constructor-arg index="0" name="zkServerList" value="${zk.address.list}" type="java.lang.String"/>
+		<constructor-arg index="1" name="zkLockPrefixPath" value="${zk.lock.prefix.path}" type="java.lang.String"/>
+	</bean>
+	
 </beans>
