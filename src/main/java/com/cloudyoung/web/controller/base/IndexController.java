@@ -88,13 +88,30 @@ public class IndexController {
 		RedissonClient redisson = redissonDistributedLock.getRedisson();
 		RLock lock = redisson.getLock(sb.toString());
 		try {
-			lock.tryLock(10L, 5L, TimeUnit.SECONDS);
-			resultVo = activityTakeRecordService.recevieActivityLottery(paramsMap);
+			while(true){
+				if(lock.tryLock(3L, 5L, TimeUnit.SECONDS)){
+					resultVo = activityTakeRecordService.recevieActivityLottery(paramsMap);
+					break;
+				}
+			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}finally{
 			lock.unlock();
 		}
+		
+//		try {
+//			while(true){
+//				if(lock.tryLock(5L, TimeUnit.SECONDS)){
+//					resultVo = activityTakeRecordService.recevieActivityLottery(paramsMap);
+//					break;
+//				}
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}finally{
+//			lock.unlock();
+//		}
 		
 //		try {
 //			lock.lock(5L, TimeUnit.SECONDS);
