@@ -87,72 +87,65 @@ public class IndexController {
 		
 		RedissonClient redisson = redissonDistributedLock.getRedisson();
 		RLock lock = redisson.getLock(sb.toString());
+		boolean locked = false;
 		try {
-			while(true){
-				if(lock.tryLock(3L, 5L, TimeUnit.SECONDS)){
-					resultVo = activityTakeRecordService.recevieActivityLottery(paramsMap);
-					break;
-				}
-			}
+			locked = lock.tryLock(3L, 5L, TimeUnit.SECONDS);
+			resultVo = activityTakeRecordService.recevieActivityLottery(paramsMap);
 		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}finally{
+			if(locked){
+				lock.unlock();
+			}
+		}
+		
+		try {
+			locked = lock.tryLock(5L, TimeUnit.SECONDS);
+			resultVo = activityTakeRecordService.recevieActivityLottery(paramsMap);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally{
+			if(locked){
+				lock.unlock();
+			}
+		}
+		
+		try {
+			lock.lock(5L, TimeUnit.SECONDS);
+		    resultVo = activityTakeRecordService.recevieActivityLottery(paramsMap);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}finally{
 			lock.unlock();
 		}
 		
-//		try {
-//			while(true){
-//				if(lock.tryLock(5L, TimeUnit.SECONDS)){
-//					resultVo = activityTakeRecordService.recevieActivityLottery(paramsMap);
-//					break;
-//				}
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}finally{
-//			lock.unlock();
-//		}
-		
-//		try {
-//			lock.lock(5L, TimeUnit.SECONDS);
-//		    resultVo = activityTakeRecordService.recevieActivityLottery(paramsMap);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}finally{
-//			lock.unlock();
-//		}
-		
-//		ZkRetrantLock retrantLock = zkDistributedLock.getRetrantLock();
-//		try {
-//			while(true){
-//				if(retrantLock.acquire(6L, 5L, TimeUnit.SECONDS)){
-//					resultVo = activityTakeRecordService.recevieActivityLottery(paramsMap);
-//					break;
-//				}
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}finally{
-//			try {
-//				retrantLock.release();
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}
-//		}
+		ZkRetrantLock retrantLock = zkDistributedLock.getRetrantLock();
+		try {
+			locked = retrantLock.acquire(6L, 5L, TimeUnit.SECONDS);
+			resultVo = activityTakeRecordService.recevieActivityLottery(paramsMap);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally{
+			try {
+				if(locked){
+					retrantLock.release();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		
 //		ZkNoRetrantLock noRetrantLock = zkDistributedLock.getNoRetrantLock();
 //		try {
-//			while(true){
-//				if(noRetrantLock.acquire(6L, 5L, TimeUnit.SECONDS)){
-//					resultVo = activityTakeRecordService.recevieActivityLottery(paramsMap);
-//					break;
-//				}
-//			}
+//			locked = noRetrantLock.acquire(6L, 5L, TimeUnit.SECONDS);
+//			resultVo = activityTakeRecordService.recevieActivityLottery(paramsMap);
 //		} catch (Exception e) {
 //			e.printStackTrace();
 //		}finally{
 //			try {
-//				noRetrantLock.release();
+//				if(locked){
+//					noRetrantLock.release();
+//				}
 //			} catch (Exception e) {
 //				e.printStackTrace();
 //			}
